@@ -5,21 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Iterate over all query parameters found in the URL
     for (const [key, value] of queryParams.entries()) {
         // Basic type conversion for known numeric fields
-        if (key === 'temperature') {
+        if (['temperature', 'top_p', 'frequency_penalty', 'presence_penalty'].includes(key)) {
           const numValue = parseFloat(value);
           llmSettings[key] = isNaN(numValue) ? value : numValue;
-        } else if (key === 'max_tokens') {
+        } else if (key === 'max_completion_tokens') {
             const numValue = parseInt(value, 10);
             llmSettings[key] = isNaN(numValue) ? value : numValue;
-        } else if (key ==='frequency_penalty') {
-          const numValue = parseFloat(value);
-          llmSettings[key] = isNaN(numValue) ? value : numValue;
-        } else if (key ==='presence_penalty') {
-            const numValue = parseFloat(value);
-            llmSettings[key] = isNaN(numValue) ? value : numValue;
-        } else if (key === 'top_p') {
-          const numValue = parseFloat(value);
-          llmSettings[key] = isNaN(numValue) ? value : numValue;
         } else {
           llmSettings[key] = value;
         }
