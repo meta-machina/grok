@@ -16,7 +16,8 @@ machine:
   name: Reasoning-Machine
   verb: Reasoning
   instructions_file: reasoning.txt
-  token: grok.txt
+  token: grok
+  server: https://localhost:443
   apiUrl: https://api.x.ai/v1/chat/completions
 
 app:
