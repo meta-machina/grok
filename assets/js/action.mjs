@@ -402,9 +402,12 @@ class MachineApp {
       
       console.log('Regular text:', desoupedText);
       
-      const desoupedThoughts = llmSoupToText(llmResponseData.reasoning_content)
+      let desoupedThoughts = '';
       
-      console.log('Thoughts text:', desoupedThoughts);
+      if (llmResponseData.reasoning_content) {
+        desoupedThoughts = llmSoupToText(llmResponseData.reasoning_content)  // No reasoning content
+        console.log('Thoughts text:', desoupedThoughts);
+      }
       
       const newCmjMessage = {
         role: llmResponseData.role,
@@ -422,9 +425,9 @@ class MachineApp {
       localStorage.setItem('multilogue', updatedPlatoText);
       this.updateDisplayState();
       console.log('Dialogue updated with LLM response.');
-      if (desoupedThoughts && desoupedThoughts.trim() !== '') {
-        localStorage.setItem('thoughts', desoupedThoughts);
-      }
+      
+      localStorage.setItem('thoughts', desoupedThoughts);
+      console.log('Thoughts updated with LLM response.');
       
     } catch (processingError) {
       console.error('Error processing LLM response:', processingError);
