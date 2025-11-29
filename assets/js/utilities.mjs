@@ -182,69 +182,6 @@ export function platoTextToPlatoHtml(platoText) {
 }
 
 /**
- * Transforms platoText format to CMJ (Chat Messages JSON) format.
- * @param {string} platoText - The platoText formatted string.
- * @returns {Array<Object>} - Array of message objects. (Note: JSDoc in context says JSON stringified, but code returns Array)
- */
-export function platoTextToCmj(platoText) {
-  if (typeof platoText !== 'string') {
-    throw new Error('Invalid input: platoText must be a string');
-  }
-  const trimmedPlatoText = platoText.trim();
-  if (!trimmedPlatoText) {
-    return []; // Return empty array for empty or whitespace-only input
-  }
-
-  const messages = [];
-  // Split by \n\n only if it's followed by a speaker pattern.
-  const messageBlocks = trimmedPlatoText.split(/\n\n(?=[A-Za-z0-9_-]+:\s*)/g);
-
-  // Determine assistant name for role assignment
-  // Prioritize machineConfig.name if available, otherwise use the literal from original function.
-  let effectiveAssistantNameUpper;
-  if (typeof machineConfig !== 'undefined' && machineConfig && typeof machineConfig.name === 'string' && machineConfig.name.trim() !== '') {
-      effectiveAssistantNameUpper = machineConfig.name.toUpperCase();
-  } else {
-      effectiveAssistantNameUpper = 'THINGKING-MACHINE'; // Fallback to original literal for this function
-  }
-
-  messageBlocks.forEach(block => {
-    const currentBlock = block.trim();
-    if (!currentBlock) return;
-
-    const speakerMatch = currentBlock.match(/^([A-Za-z0-9_-]+):\s*/);
-    if (!speakerMatch) {
-      console.warn('platoTextToCmj: Skipping block that does not start with a speaker pattern:', currentBlock);
-      return;
-    }
-
-    const speaker = speakerMatch[1]; // Speaker name as it appears
-    const rawUtterance = currentBlock.substring(speakerMatch[0].length);
-
-    // Replace "orphaned" double (or more) newlines within the utterance with '\n\t', then trim.
-    // For CMJ, \n and \t remain literal characters in the content string.
-    const processedUtterance = rawUtterance.replace(/\n{2,}/g, '\n\t').trim();
-
-    let role = 'user';
-    const speakerUpper = speaker.toUpperCase();
-
-    if (speakerUpper === effectiveAssistantNameUpper) {
-      role = 'assistant';
-    } else if (speakerUpper === 'INSTRUCTIONS') {
-      role = 'system';
-    }
-
-    messages.push({
-      role: role,
-      name: speaker, // Keep original speaker name casing
-      content: processedUtterance
-    });
-  });
-
-  return messages; // Returns an array of objects
-}
-
-/**
  * Transforms an array of CMJ message objects to platoText format.
  * @param {Array<Object>} cmjMessages - An array of CMJ message objects.
  *                                      Each object should have 'name' and 'content' properties.
